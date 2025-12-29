@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtualBet Nano Client - Plateforme de Paris Sportifs</title>
+    <meta name="description" content="Plateforme sécurisée de paris sportifs en temps réel. Interface ultra-optimisée pour les paris virtuels.">
+    <style>
+        /* ===================== RESET & BASE ===================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            color: #e5e7eb;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ===================== CONTAINER PRINCIPAL ===================== */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        @media (min-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr 1fr;
+                align-items: center;
+            }
+        }
+
+        /* ===================== HEADER & LOGO ===================== */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .logo-text {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* ===================== SECTION GAUCHE - PRÉSENTATION ===================== */
+        .left-section {
+            padding: 30px;
+        }
+
+        .features-title {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #f1f5f9;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #60a5fa;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #f1f5f9;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        /* ===================== SECTION DROITE - ACCÈS ===================== */
+        .right-section {
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid #334155;
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .access-title {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #f1f5f9;
+        }
+
+        .access-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .access-card {
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .access-card:hover {
+            transform: scale(1.02);
+            border-color: #2563eb;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .access-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .access-card:hover::after {
+            left: 100%;
+        }
+
+        .access-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #60a5fa;
+        }
+
+        .access-card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #f1f5f9;
+        }
+
+        .access-card-desc {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        }
+
+        /* ===================== STATISTIQUES ===================== */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 15px;
+            border: 1px solid #334155;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ===================== FOOTER ===================== */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .footer-link {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-link:hover {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
+
+        /* ===================== ANIMATIONS ===================== */
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        /* ===================== RESPONSIVE ===================== */
+        @media (max-width: 767px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .logo-text {
+                font-size: 28px;
+            }
+
+            .features-title {
+                font-size: 24px;
+            }
+
+            .right-section {
+                padding: 25px;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .access-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- SECTION GAUCHE - PRÉSENTATION -->
+        <div class="left-section fade-in">
+            <div class="header">
+                <div class="logo-container">
+                    <div class="logo-icon">⚡</div>
+                    <div class="logo-text">VirtualBet</div>
+                </div>
+                <p class="tagline">Plateforme de paris sportifs nouvelle génération</p>
+                <div class="version-badge">Version 40.7 - Interface Nano</div>
+            </div>
+
+            <h2 class="features-title">Fonctionnalités Premium</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card fade-in delay-1">
+                    <div class="feature-icon">⚽</div>
+                    <h3 class="feature-title">Matchs en Direct</h3>
+                    <p class="feature-desc">Suivez les matchs en temps réel avec mise à jour automatique des scores et statistiques.</p>
+                </div>
+
+                <div class="feature-card fade-in delay-2">
+                    <div class="feature-icon">🔐</div>
+                    <h3 class="feature-title">Sécurité Maximale</h3>
+                    <p class="feature-desc">Chiffrement AES-256 et authentification à double facteur pour protéger vos données.</p>
+                </div>
+
+                <div class="feature-card fade-in delay-3">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Interface Rapide</h3>
+                    <p class="feature-desc">Optimisée pour les mobiles avec temps de réponse inférieur à 100ms.</p>
+                </div>
+
+                <div class="feature-card fade-in delay-4">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title">Recharges Instantanées</h3>
+                    <p class="feature-desc">Multiples méthodes de paiement avec confirmation en moins de 5 minutes.</p>
+                </div>
+            </div>
+
+            <!-- STATISTIQUES -->
+            <div class="stats-container fade-in">
+                <div class="stat-item">
+                    <div class="stat-number" id="liveMatches">0</div>
+                    <div class="stat-label">Matchs Live</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="activeUsers">0</div>
+                    <div class="stat-label">Utilisateurs</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalBets">0</div>
+                    <div class="stat-label">Paris</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION DROITE - ACCÈS -->
+        <div class="right-section fade-in delay-2">
+            <h2 class="access-title">Accéder à la Plateforme</h2>
+            
+            <div class="access-options">
+                <div class="access-card" onclick="window.location.href='login.html'">
+                    <div class="access-icon">🔑</div>
+                    <h3 class="access-card-title">Connexion Client</h3>
+                    <p class="access-card-desc">
+                        Accédez à votre espace personnel avec votre ID client et certificat numérique.
+                        Gérez vos paris, solde et historique.
+                    </p>
+                    <button class="btn">
+                        🚀 Accéder au Login
+                    </button>
+                </div>
+
+                <div class="access-card" id="adminAccess">
+                    <div class="access-icon">👑</div>
+                    <h3 class="access-card-title">Espace Admin</h3>
+                    <p class="access-card-desc">
+                        Interface d'administration pour la gestion des utilisateurs, 
+                        validation des recharges et monitoring du système.
+                    </p>
+                    <button class="btn btn-secondary" onclick="showAdminInfo()">
+                        ℹ️ Informations Admin
+                    </button>
+                </div>
+
+                <div class="access-card">
+                    <div class="access-icon">📱</div>
+                    <h3 class="access-card-title">Application Mobile</h3>
+                    <p class="access-card-desc">
+                        Téléchargez l'application mobile pour parier où que vous soyez.
+                        Disponible sur iOS et Android.
+                    </p>
+                    <button class="btn" onclick="showMobileInfo()">
+                        📲 Télécharger
+                    </button>
+                </div>
+            </div>
+
+            <!-- INFORMATIONS DE SÉCURITÉ -->
+            <div class="security-badge" style="margin-top: 30px;">
+                <span>🔒</span>
+                <span>Sécurisé par GitHub Pages HTTPS</span>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px; font-size: 13px; color: #94a3b8;">
+                <p>⚠️ Nécessite un navigateur moderne avec support WebCrypto</p>
+                <p>✅ Compatible Chrome 60+, Firefox 63+, Safari 14+</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer fade-in delay-3">
+        <div class="security-badge">
+            <span>✅</span>
+            <span>Système certifié sécurisé</span>
+        </div>
+        
+        <p>© 2024 VirtualBet Nano Client. Tous droits réservés.</p>
+        <p>Plateforme de démonstration - Jeu responsable</p>
+        
+        <div class="footer-links">
+            <a href="#" class="footer-link" onclick="showTerms()">Conditions d'utilisation</a>
+            <a href="#" class="footer-link" onclick="showPrivacy()">Confidentialité</a>
+            <a href="#" class="footer-link" onclick="showHelp()">Aide & Support</a>
+        </div>
+
+        <p style="margin-top: 20px; font-size: 12px; color: #64748b;">
+            Déployé sur GitHub Pages | Version: 40.7.2024
+        </p>
+    </div>
+
+    <script>
+        // ===================== ANIMATION DES STATISTIQUES =====================
+        function animateCounter(elementId, targetValue, duration = 2000) {
+            const element = document.getElementById(elementId);
+            let start = 0;
+            const increment = targetValue / (duration / 16); // 60fps
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= targetValue) {
+                    element.textContent = targetValue.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start).toLocaleString();
+                }
+            }, 16);
+        }
+
+        // ===================== INITIALISATION =====================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔧 VirtualBet Index chargé');
+            
+            // Animer les statistiques
+            setTimeout(() => {
+                animateCounter('liveMatches', 24);
+                animateCounter('activeUsers', 1542);
+                animateCounter('totalBets', 8924);
+            }, 500);
+
+            // Vérifier la compatibilité WebCrypto
+            if (!window.crypto || !window.crypto.subtle) {
+                console.warn('⚠️ WebCrypto API non disponible');
+            } else {
+                console.log('✅ WebCrypto API disponible');
+            }
+
+            // Vérifier HTTPS
+            if (window.location.protocol !== 'https:' && 
+                window.location.hostname !== 'localhost' && 
+                window.location.hostname !== '127.0.0.1') {
+                console.warn('⚠️ Site non sécurisé (HTTPS recommandé)');
+            }
+        });
+
+        // ===================== FONCTIONS UTILITAIRES =====================
+        function showAdminInfo() {
+            alert("🔐 Accès Administrateur\n\n" +
+                  "Pour accéder à l'interface d'administration :\n" +
+                  "1. Installez l'extension Tampermonkey\n" +
+                  "2. Ajoutez le script admin fourni\n" +
+                  "3. Utilisez la clé secrète ADMIN_PRIVATE_SECRET_2025\n\n" +
+                  "Fonctionnalités :\n" +
+                  "• Décodage des hash clients\n" +
+                  "• Génération de certificats\n" +
+                  "• Validation des recharges\n" +
+                  "• Monitoring système");
+        }
+
+        function showMobileInfo() {
+            alert("📱 Application Mobile\n\n" +
+                  "Disponible prochainement sur :\n" +
+                  "• App Store (iOS)\n" +
+                  "• Google Play (Android)\n\n" +
+                  "Fonctionnalités mobiles :\n" +
+                  "• Notifications en temps réel\n" +
+                  "• Paiement par QR Code\n" +
+                  "• Interface tactile optimisée\n" +
+                  "• Mode hors ligne");
+        }
+
+        function showTerms() {
+            alert("📜 Conditions d'utilisation\n\n" +
+                  "1. Âge minimum requis : 18 ans\n" +
+                  "2. Jeu responsable obligatoire\n" +
+                  "3. Limites de dépôt appliquées\n" +
+                  "4. Vérification d'identité requise\n\n" +
+                  "Consultez les conditions complètes sur demande.");
+        }
+
+        function showPrivacy() {
+            alert("🔒 Politique de confidentialité\n\n" +
+                  "• Données chiffrées AES-256\n" +
+                  "• Aucune donnée bancaire stockée\n" +
+                  "• Conformité RGPD\n" +
+                  "• Cookies techniques uniquement\n\n" +
+                  "Vos données sont protégées.");
+        }
+
+        function showHelp() {
+            alert("❓ Aide & Support\n\n" +
+                  "Support technique :\n" +
+                  "📧 support@virtualbet.demo\n" +
+                  "📞 +33 1 23 45 67 89\n\n" +
+                  "Horaires :\n" +
+                  "Lun-Ven : 9h-20h\n" +
+                  "Sam-Dim : 10h-18h\n\n" +
+                  "FAQ disponible dans le dashboard.");
+        }
+
+        // ===================== EFFETS VISUELS =====================
+        document.querySelectorAll('.access-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02) translateY(-5px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) translateY(0)';
+            });
+        });
+
+        // ===================== RACCOURCI CLAVIER =====================
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+L ou Cmd+L pour login
+            if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+                e.preventDefault();
+                window.location.href = 'login.html';
+            }
+            
+            // Échap pour retour à l'accueil
+            if (e.key === 'Escape') {
+                window.location.href = window.location.origin;
+            }
+        });
+
+        // ===================== DÉTECTION DE SESSION =====================
+        function checkExistingSession() {
+            const sessionCert = localStorage.getItem('VB_SESSION_CERT');
+            if (sessionCert) {
+                try {
+                    const [type, id, timestamp] = sessionCert.split("|");
+                    const timeDiff = Date.now() - parseInt(timestamp);
+                    const SESSION_VALID_MS = 48 * 60 * 60 * 1000;
+                    
+                    if (type === "CERT" && timeDiff < SESSION_VALID_MS) {
+                        // Option : proposer la redirection automatique
+                        const autoRedirect = confirm(`✅ Session active détectée pour l'ID ${id}\n\nSouhaitez-vous vous connecter automatiquement ?`);
+                        if (autoRedirect) {
+                            window.location.href = 'dashboard.html';
+                        }
+                    } else {
+                        localStorage.removeItem('VB_SESSION_CERT');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('VB_SESSION_CERT');
+                }
+            }
+        }
+
+        // Vérifier la session après le chargement
+        setTimeout(checkExistingSession, 1000);
+    </script>
+</body>
+</html>

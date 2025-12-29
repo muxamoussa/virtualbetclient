@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtualBet Nano Client - Dashboard</title>
+    <style>
+        /* ===================== STYLES GÉNÉRAUX ===================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            color: #e5e7eb;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===================== CONTAINER PRINCIPAL ===================== */
+        #dashboardContainer {
+            max-width: 400px;
+            margin: 10px auto;
+            padding: 12px;
+        }
+
+        .vb-box {
+            background: #0f172a;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 13px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid #334155;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        /* ===================== HEADERS ===================== */
+        h3 {
+            color: #60a5fa;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        /* ===================== SESSION TIMER ===================== */
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        #sessionTimer {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        /* ===================== INFORMATIONS UTILISATEUR ===================== */
+        .user-info-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .user-info-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 35px;
+        }
+
+        .user-id-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: 1px solid #7c3aed;
+        }
+
+        .user-balance-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: 1px solid #059669;
+        }
+
+        /* ===================== TABS ===================== */
+        .vb-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .vb-tab {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            background: #1e293b;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .vb-tab:hover {
+            background: #334155;
+        }
+
+        .vb-tab.active {
+            background: #2563eb;
+            font-weight: bold;
+        }
+
+        /* ===================== FRAMES ===================== */
+        .vb-frame {
+            border: 2px dashed #2563eb;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 10px 0;
+            background: #020617;
+            text-align: center;
+        }
+
+        /* ===================== INTERFACE MATCH ===================== */
+        .match-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 15px;
+        }
+
+        .match-id-display {
+            font-size: 12px;
+            color: #60a5fa;
+            font-weight: bold;
+            background: #1e293b;
+            padding: 3px 10px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .match-status-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .match-status {
+            font-size: 14px;
+            font-weight: bold;
+            color: #f59e0b;
+            min-height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===================== STRUCTURE DES ÉQUIPES ===================== */
+        .match-teams-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 12px;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .team-left, .team-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            grid-row: 1 / span 3;
+        }
+
+        .vs-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            grid-row: 1 / span 3;
+        }
+
+        .vs-text {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+
+        .team-name {
+            font-size: 13px;
+            font-weight: bold;
+            color: #e5e7eb;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #1e293b;
+            padding: 6px 10px;
+            border-radius: 6px;
+            width: 100%;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            grid-row: 1;
+        }
+
+        .team-score-display {
+            font-size: 26px;
+            font-weight: bold;
+            color: #f59e0b;
+            height: 65px;
+            width: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #020617;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            margin: 0 auto;
+            transition: all 0.3s;
+            grid-row: 2;
+        }
+
+        /* ===================== COTES ===================== */
+        .odds-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            grid-row: 3;
+            margin-top: auto;
+        }
+
+        .odd-button-team, .odd-button-draw {
+            width: 75px;
+            height: 55px;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .odd-button-team {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .odd-button-draw {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            margin-top: auto;
+        }
+
+        .odd-button-team:hover:not(:disabled),
+        .odd-button-draw:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .odd-button-team:hover:not(:disabled) {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+        }
+
+        .odd-button-draw:hover:not(:disabled) {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        }
+
+        .odd-button-team:disabled,
+        .odd-button-draw:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .odd-value-team,
+        .odd-value-draw {
+            font-size: 14px;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+
+        /* ===================== MODAL PARIS ===================== */
+        .bet-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .bet-modal-content {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 12px;
+            width: 320px;
+            max-width: 90%;
+            border: 2px solid #2563eb;
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .bet-details {
+            background: #020617;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #334155;
+        }
+
+        .bet-detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 6px 0;
+            font-size: 12px;
+        }
+
+        .bet-amount-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #020617;
+            color: #e5e7eb;
+            font-size: 14px;
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .bet-modal-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        /* ===================== FORMULAIRES ===================== */
+        .vb-input, .vb-button, .vb-select {
+            width: 100%;
+            margin-top: 8px;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .vb-input, .vb-select {
+            background: #020617;
+            color: #e5e7eb;
+        }
+
+        .vb-input:focus, .vb-select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .vb-button {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+
+        .vb-button:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+        }
+
+        .vb-button-secondary {
+            background: #334155;
+        }
+
+        .vb-button-secondary:hover {
+            background: #475569;
+        }
+
+        /* ===================== UTILITAIRES ===================== */
+        .vb-hidden {
+            display: none !important;
+        }
+
+        .vb-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .vb-badge-success { background: #10b981; color: white; }
+        .vb-badge-warning { background: #f59e0b; color: white; }
+        .vb-badge-danger { background: #ef4444; color: white; }
+
+        /* ===================== RECHARGE ===================== */
+        .recharge-request {
+            margin-bottom: 12px;
+        }
+
+        .recharge-request .vb-frame {
+            position: relative;
+        }
+
+        .confirm-section {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #334155;
+        }
+
+        .confirm-code-input {
+            margin-bottom: 8px;
+        }
+
+        /* ===================== HISTORIQUE ===================== */
+        .history-list {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 8px;
+        }
+
+        .history-item {
+            padding: 8px;
+            margin: 6px 0;
+            background: #1e293b;
+            border-radius: 6px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .history-item.won {
+            border-left-color: #10b981;
+        }
+
+        .history-item.loss {
+            border-left-color: #ef4444;
+        }
+
+        /* ===================== TOASTS ===================== */
+        .success-toast {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            z-index: 1001;
+            animation: slideInUp 0.5s ease-out;
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 280px;
+        }
+
+        @keyframes progressBar {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 0 0 8px 8px;
+            animation: progressBar 5.5s linear forwards;
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* ===================== RESPONSIVE ===================== */
+        @media (max-width: 420px) {
+            #dashboardContainer {
+                margin: 5px;
+                padding: 8px;
+            }
+            
+            .vb-box {
+                padding: 12px;
+            }
+            
+            .match-teams-grid {
+                gap: 10px;
+            }
+            
+            .team-score-display {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            .odd-button-team, .odd-button-draw {
+                width: 70px;
+                height: 50px;
+            }
+            
+            .team-name {
+                min-height: 40px;
+                font-size: 12px;
+            }
+            
+            .vs-text {
+                margin: 25px 0;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .user-info-buttons {
+                flex-direction: column;
+            }
+            
+            .team-score-display {
+                width: 55px;
+                height: 55px;
+                font-size: 22px;
+            }
+            
+            .odd-button-team, .odd-button-draw {
+                width: 65px;
+                height: 45px;
+                font-size: 11px;
+            }
+            
+            .team-name {
+                min-height: 35px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="dashboardContainer" class="vb-box">
+        <div class="session-header">
+            <h3>DASHBOARD</h3>
+            <div id="sessionTimer">Session: 48:00:00</div>
+        </div>
+
+        <div class="user-info-buttons">
+            <button class="user-info-btn user-id-btn">
+                <span>🆔</span>
+                <span id="userIDDisplay">ID: ----</span>
+            </button>
+            <button class="user-info-btn user-balance-btn">
+                <span>💰</span>
+                <span id="userBalanceDisplay">1000 FCFA</span>
+            </button>
+        </div>
+
+        <div class="vb-tabs">
+            <div id="tabDash" class="vb-tab active">🏠 Match</div>
+            <div id="tabRecharge" class="vb-tab">💰 Recharger</div>
+            <div id="tabHistory" class="vb-tab">📜 Historique</div>
+        </div>
+
+        <!-- DASHBOARD CONTENT -->
+        <div id="contentDash">
+            <div class="vb-frame" id="matchFrame" style="padding: 10px;">
+                <!-- EN-TÊTE DU MATCH -->
+                <div class="match-header">
+                    <div class="match-id-display" id="matchIdDisplay">#1</div>
+                    <b>⚽ MATCH EN DIRECT</b>
+                </div>
+
+                <!-- STATUT DU MATCH -->
+                <div class="match-status-container">
+                    <div class="match-status" id="matchStatus">Calculating...</div>
+                </div>
+
+                <!-- STRUCTURE DES ÉQUIPES -->
+                <div class="match-teams-grid">
+                    <!-- COLONNE GAUCHE - Équipe 1 -->
+                    <div class="team-left">
+                        <div class="team-name" id="team1Name">PARIS SG</div>
+                        <div class="team-score-display" id="team1Score">0</div>
+                        <div class="odds-column">
+                            <button class="odd-button-team" data-type="W1" data-odd="1.85">
+                                <span>W1</span>
+                                <span class="odd-value-team">1.85</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- COLONNE CENTRALE -->
+                    <div class="vs-center">
+                        <div class="vs-text">VS</div>
+                        <button class="odd-button-draw" data-type="X" data-odd="3.25">
+                            <span>X</span>
+                            <span class="odd-value-draw">3.25</span>
+                        </button>
+                    </div>
+
+                    <!-- COLONNE DROITE - Équipe 2 -->
+                    <div class="team-right">
+                        <div class="team-name" id="team2Name">REAL MADRID</div>
+                        <div class="team-score-display" id="team2Score">0</div>
+                        <div class="odds-column">
+                            <button class="odd-button-team" data-type="W2" data-odd="2.10">
+                                <span>W2</span>
+                                <span class="odd-value-team">2.10</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INFO TEMPS -->
+                <div style="margin-top: 12px; font-size: 11px; color: #94a3b8; text-align: center;">
+                    ⚠️ Paris ouverts pendant la pause (1min)
+                </div>
+            </div>
+
+            <div style="margin-top: 12px; font-size: 12px; color: #94a3b8; text-align: center;">
+                Expiration: <span id="expirationDate"></span>
+            </div>
+
+            <button id="dashLogout" class="vb-button vb-button-secondary" style="margin-top: 12px;">🚪 Déconnexion</button>
+        </div>
+
+        <!-- RECHARGE CONTENT -->
+        <div id="contentRecharge" class="vb-hidden">
+            <div class="vb-frame" style="padding: 10px;">
+                <b>💰 RECHARGER MON COMPTE</b>
+                <input id="depID" class="vb-input" readonly>
+                <input id="depAmount" class="vb-input" placeholder="Montant (min 500 FCFA)" type="number">
+                <select id="depType" class="vb-select">
+                    <option>Mobile Money (Orange Money)</option>
+                    <option>Mobile Money (Moov Money)</option>
+                    <option>Mobile Money (MTN Mobile Money)</option>
+                    <option>Visa/Mastercard</option>
+                    <option>Transfert Bancaire</option>
+                </select>
+                <button id="depValidate" class="vb-button">VALIDER LA DEMANDE</button>
+            </div>
+
+            <div class="vb-tabs" style="margin-top: 12px;">
+                <div id="depTabPending" class="vb-tab active">⏳ En attente</div>
+                <div id="depTabSuccess" class="vb-tab">✅ Confirmées</div>
+                <div id="depTabExpired" class="vb-tab">❌ Expirées</div>
+            </div>
+
+            <div id="depPendingContent" style="margin-top: 8px;"></div>
+            <div id="depSuccessContent" class="vb-hidden" style="margin-top: 8px;"></div>
+            <div id="depExpiredContent" class="vb-hidden" style="margin-top: 8px;"></div>
+        </div>
+
+        <!-- HISTORY CONTENT -->
+        <div id="contentHistory" class="vb-hidden">
+            <div class="vb-frame" style="padding: 10px;">
+                <b>📜 HISTORIQUE DES PARIS</b>
+                <div class="history-list" id="betHistoryList">
+                    <div style="text-align: center; color: #94a3b8; padding: 15px;">Aucun pari enregistré</div>
+                </div>
+            </div>
+            <button id="clearHistory" class="vb-button vb-button-secondary" style="margin-top: 8px;">🗑️ Effacer</button>
+        </div>
+    </div>
+
+    <script>
+        // ===================== CONFIGURATION =====================
+        const CONFIG = {
+            SESSION_VALID_MS: 48 * 60 * 60 * 1000, // 48h
+            ADMIN_SECRET: "ADMIN_PRIVATE_SECRET_2025",
+            MIN_DEPOSIT: 500,
+            MATCH_DURATION: 240, // 4 minutes en secondes
+            COUNTDOWN_DURATION: 60, // 1 minute de countdown entre les matchs
+            CYCLE_DURATION: 300 // 5 minutes par cycle (4 + 1)
+        };
+
+        // ===================== LISTE DES ÉQUIPES ALEATOIRES =====================
+        const FOOTBALL_TEAMS = [
+            "PARIS SG", "REAL MADRID", "FC BARCELONE", "MANCHESTER UNITED", "LIVERPOOL",
+            "BAYERN MUNICH", "JUVENTUS", "AC MILAN", "INTER MILAN", "CHELSEA",
+            "MANCHESTER CITY", "ARSENAL", "TOTTENHAM", "ATLETICO MADRID", "OLYMPIQUE LYON",
+            "OLYMPIQUE MARSEILLE", "AS MONACO", "LILLE OSC", "AS SAINT-ÉTIENNE", "AJ AUXERRE",
+            "STADE RENNAIS", "OGC NICE", "FC NANTES", "GIRONDINS BORDEAUX", "RC LENS",
+            "FC PORTO", "BENFICA LISBONNE", "SPORTING PORTUGAL", "AJAX AMSTERDAM", "PSV EINDHOVEN",
+            "BORUSSIA DORTMUND", "RB LEIPZIG", "BORUSSIA M'GLADBACH", "BAYER LEVERKUSEN", "SCHALKE 04",
+            "AS ROMA", "NAPOLI", "LAZIO ROME", "FIORENTINA", "ATALANTA",
+            "SEVILLE FC", "VALENCIA CF", "REAL BETIS", "VILLARREAL CF", "ATHLETIC BILBAO"
+        ];
+
+        // ===================== ÉTAT GLOBAL =====================
+        let connected = false;
+        let sessionCert = "";
+        let certExpiration = 0;
+        let balance = 1000;
+        let bets = [];
+        let pendingDeposits = [];
+        let requestCounter = 1;
+
+        // ===================== ÉTAT DU MATCH =====================
+        let matchTime = CONFIG.MATCH_DURATION;
+        let countdownTime = CONFIG.COUNTDOWN_DURATION;
+        let matchRunning = false;
+        let countdownRunning = false;
+        let matchInterval = null;
+        let countdownInterval = null;
+        let matchScheduleInterval = null;
+        let currentMatchId = 1;
+        let matches = {};
+        let teamsForNextMatch = null;
+        let currentTeams = {
+            team1: "PARIS SG",
+            team2: "REAL MADRID"
+        };
+        let oddsForNextMatch = null;
+        let odds = {
+            W1: 1.85,
+            X: 3.25,
+            W2: 2.10
+        };
+
+        // ===================== FONCTIONS UTILITAIRES =====================
+        function pad(n) { return n.toString().padStart(2, '0'); }
+        function val(id) { return document.getElementById(id)?.value.trim() || ""; }
+        function now() {
+            const d = new Date();
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+        }
+        
+        async function sha256(data) {
+            const encoder = new TextEncoder();
+            const buf = await crypto.subtle.digest("SHA-256", encoder.encode(data));
+            return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function getRandomTeams() {
+            let team1, team2;
+            do {
+                team1 = FOOTBALL_TEAMS[Math.floor(Math.random() * FOOTBALL_TEAMS.length)];
+                team2 = FOOTBALL_TEAMS[Math.floor(Math.random() * FOOTBALL_TEAMS.length)];
+            } while (team1 === team2);
+            
+            return {
+                team1: team1,
+                team2: team2
+            };
+        }
+
+        function generateRandomOdds() {
+            return {
+                W1: (Math.random() * 0.8 + 1.5).toFixed(2),
+                X: (Math.random() * 1.5 + 2.5).toFixed(2),
+                W2: (Math.random() * 0.8 + 1.5).toFixed(2)
+            };
+        }
+
+        function updateTeamsDisplay() {
+            document.getElementById("team1Name").textContent = currentTeams.team1;
+            document.getElementById("team2Name").textContent = currentTeams.team2;
+        }
+
+        // ===================== GESTION DU STOCKAGE LOCAL =====================
+        function saveLocalStorage() {
+            localStorage.setItem('VB_BALANCE', balance.toString());
+            localStorage.setItem('VB_BETS', JSON.stringify(bets));
+            localStorage.setItem('VB_PENDING_DEP', JSON.stringify(pendingDeposits));
+            localStorage.setItem('VB_REQ_COUNTER', requestCounter.toString());
+            localStorage.setItem('VB_MATCHES', JSON.stringify(matches));
+        }
+
+        function loadLocalStorage() {
+            balance = parseInt(localStorage.getItem('VB_BALANCE') || '1000');
+            bets = JSON.parse(localStorage.getItem('VB_BETS') || '[]');
+            pendingDeposits = JSON.parse(localStorage.getItem('VB_PENDING_DEP') || '[]');
+            requestCounter = parseInt(localStorage.getItem('VB_REQ_COUNTER') || '1');
+            matches = JSON.parse(localStorage.getItem('VB_MATCHES') || '{}');
+            
+            // Charger la session depuis login
+            sessionCert = localStorage.getItem('VB_SESSION_CERT') || '';
+        }
+
+        // ===================== VÉRIFICATION DE SESSION =====================
+        function checkSession() {
+            if (!sessionCert) {
+                window.location.href = "login.html";
+                return false;
+            }
+            
+            const [type, id, timestamp] = sessionCert.split("|");
+            const timeDiff = Date.now() - parseInt(timestamp);
+            
+            if (type !== "CERT" || timeDiff >= CONFIG.SESSION_VALID_MS) {
+                localStorage.removeItem('VB_SESSION_CERT');
+                window.location.href = "login.html";
+                return false;
+            }
+            
+            connected = true;
+            certExpiration = parseInt(timestamp) + CONFIG.SESSION_VALID_MS;
+            return id;
+        }
+
+        // ===================== GESTION DU MATCH =====================
+        function calculateCurrentMatch() {
+            const now = new Date();
+            const totalMinutes = now.getHours() * 60 + now.getMinutes();
+            const totalSeconds = totalMinutes * 60 + now.getSeconds();
+
+            const cycleNumber = Math.floor(totalMinutes / 5);
+            const matchId = cycleNumber + 1;
+            const cycleStartSeconds = cycleNumber * CONFIG.CYCLE_DURATION;
+            const timeInCycle = totalSeconds - cycleStartSeconds;
+
+            if (timeInCycle >= CONFIG.MATCH_DURATION) {
+                return {
+                    matchId: matchId,
+                    status: "countdown",
+                    timeRemaining: CONFIG.CYCLE_DURATION - timeInCycle,
+                    timeInCycle: timeInCycle,
+                    cycleStart: cycleStartSeconds,
+                    nextMatchId: matchId + 1
+                };
+            } else {
+                return {
+                    matchId: matchId,
+                    status: "live",
+                    timeRemaining: CONFIG.MATCH_DURATION - timeInCycle,
+                    timeInCycle: timeInCycle,
+                    cycleStart: cycleStartSeconds,
+                    nextMatchId: matchId + 1
+                };
+            }
+        }
+
+        function getCurrentMatch() {
+            const matchInfo = calculateCurrentMatch();
+            const matchId = matchInfo.status === "countdown" ? matchInfo.nextMatchId : matchInfo.matchId;
+
+            if (!matches[matchId]) {
+                matches[matchId] = {
+                    id: matchId,
+                    team1Score: 0,
+                    team2Score: 0,
+                    team1Name: currentTeams.team1,
+                    team2Name: currentTeams.team2,
+                    events: [],
+                    status: "pending",
+                    startTime: null,
+                    endTime: null,
+                    result: null
+                };
+            }
+            return matches[matchId];
+        }
+
+        function updateMatchSchedule() {
+            const matchInfo = calculateCurrentMatch();
+            currentMatchId = matchInfo.matchId;
+
+            const statusEl = document.getElementById("matchStatus");
+            const matchIdEl = document.getElementById("matchIdDisplay");
+
+            if (matchIdEl) {
+                matchIdEl.textContent = `#${currentMatchId}`;
+            }
+
+            if (statusEl) {
+                if (matchInfo.status === "live") {
+                    if (!matchRunning) {
+                        startLiveMatch(matchInfo.timeRemaining);
+                    } else if (matchRunning) {
+                        matchTime = matchInfo.timeRemaining;
+                    }
+
+                    const minutes = Math.floor(matchTime / 60);
+                    const seconds = matchTime % 60;
+                    statusEl.textContent = `${pad(minutes)}:${pad(seconds)}`;
+                    statusEl.style.color = "#10b981";
+                    updateCurrentMatchFrame();
+
+                } else if (matchInfo.status === "countdown") {
+                    countdownTime = matchInfo.timeRemaining;
+                    const minutes = Math.floor(countdownTime / 60);
+                    const seconds = countdownTime % 60;
+                    statusEl.textContent = `Prochain match #${matchInfo.nextMatchId} dans ${pad(minutes)}:${pad(seconds)}`;
+                    statusEl.style.color = "#f59e0b";
+
+                    if (!countdownRunning) {
+                        startCountdown();
+                    }
+
+                    if (matchRunning) {
+                        endMatch();
+                    }
+
+                    prepareNextMatchFrame(matchInfo.nextMatchId);
+                }
+            }
+
+            updateMatchDisplay();
+            updateCountdownDisplay();
+        }
+
+        function startLiveMatch(timeRemaining) {
+            if (matchRunning) return;
+
+            matchRunning = true;
+            matchTime = timeRemaining;
+
+            const currentMatch = getCurrentMatch();
+            currentMatch.status = "live";
+            currentMatch.startTime = now();
+            currentMatch.team1Name = currentTeams.team1;
+            currentMatch.team2Name = currentTeams.team2;
+            saveLocalStorage();
+
+            document.querySelectorAll('.odd-button-team, .odd-button-draw').forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = "0.5";
+            });
+
+            if (matchTime === CONFIG.MATCH_DURATION) {
+                showNotification(`⚽ Match #${currentMatchId} commencé !`, 
+                    `${currentTeams.team1} vs ${currentTeams.team2}\nLes paris sont fermés pendant 4 minutes !`);
+            }
+
+            matchInterval = setInterval(() => {
+                matchTime--;
+                updateMatchDisplay();
+
+                if (matchTime > 0 && matchRunning) {
+                    simulateMatchEvents(currentMatch);
+                }
+
+                if (matchTime <= 0) {
+                    endMatch();
+                }
+            }, 1000);
+        }
+
+        function simulateMatchEvents(currentMatch) {
+            if (Math.random() < 0.015) {
+                const eventType = Math.random();
+
+                if (eventType < 0.7) {
+                    const scoringTeam = Math.random() < 0.5 ? 1 : 2;
+
+                    if (scoringTeam === 1) {
+                        currentMatch.team1Score++;
+                        currentMatch.events.push({
+                            time: matchTime,
+                            type: "but",
+                            team: currentTeams.team1,
+                            minute: Math.floor((CONFIG.MATCH_DURATION - matchTime) / 60)
+                        });
+                        flashTeamScore(1);
+                        showGoalNotification(currentTeams.team1);
+                    } else {
+                        currentMatch.team2Score++;
+                        currentMatch.events.push({
+                            time: matchTime,
+                            type: "but",
+                            team: currentTeams.team2,
+                            minute: Math.floor((CONFIG.MATCH_DURATION - matchTime) / 60)
+                        });
+                        flashTeamScore(2);
+                        showGoalNotification(currentTeams.team2);
+                    }
+
+                    saveLocalStorage();
+                    updateCurrentMatchFrame();
+
+                } else if (eventType < 0.9) {
+                    const team = Math.random() < 0.5 ? currentTeams.team1 : currentTeams.team2;
+                    currentMatch.events.push({
+                        time: matchTime,
+                        type: "carton jaune",
+                        team: team,
+                        minute: Math.floor((CONFIG.MATCH_DURATION - matchTime) / 60)
+                    });
+                    saveLocalStorage();
+
+                } else {
+                    currentMatch.events.push({
+                        time: matchTime,
+                        type: "blessure",
+                        team: "Les deux équipes",
+                        minute: Math.floor((CONFIG.MATCH_DURATION - matchTime) / 60)
+                    });
+                    saveLocalStorage();
+                }
+            }
+        }
+
+        function startCountdown() {
+            if (countdownRunning) return;
+
+            countdownRunning = true;
+
+            document.querySelectorAll('.odd-button-team, .odd-button-draw').forEach(btn => {
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            });
+
+            countdownInterval = setInterval(() => {
+                countdownTime--;
+                updateCountdownDisplay();
+
+                if (countdownTime <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownRunning = false;
+                }
+            }, 1000);
+        }
+
+        function stopAllTimers() {
+            clearInterval(matchInterval);
+            clearInterval(countdownInterval);
+            clearInterval(matchScheduleInterval);
+            matchRunning = false;
+            countdownRunning = false;
+        }
+
+        function updateMatchDisplay() {
+            const currentMatch = getCurrentMatch();
+
+            const score1El = document.getElementById("team1Score");
+            const score2El = document.getElementById("team2Score");
+            if (score1El) score1El.textContent = currentMatch.team1Score;
+            if (score2El) score2El.textContent = currentMatch.team2Score;
+
+            const statusEl = document.getElementById("matchStatus");
+            if (statusEl && matchRunning) {
+                const minutes = Math.floor(matchTime / 60);
+                const seconds = matchTime % 60;
+                statusEl.textContent = `${pad(minutes)}:${pad(seconds)}`;
+
+                if (matchTime <= 60) {
+                    statusEl.style.color = "#ef4444";
+                } else if (matchTime <= 120) {
+                    statusEl.style.color = "#f59e0b";
+                } else {
+                    statusEl.style.color = "#10b981";
+                }
+            }
+        }
+
+        function updateCountdownDisplay() {
+            const statusEl = document.getElementById("matchStatus");
+            if (statusEl && countdownRunning) {
+                const minutes = Math.floor(countdownTime / 60);
+                const seconds = countdownTime % 60;
+                const matchInfo = calculateCurrentMatch();
+                statusEl.textContent = `Prochain match #${matchInfo.nextMatchId} dans ${pad(minutes)}:${pad(seconds)}`;
+                statusEl.style.color = "#f59e0b";
+
+                if (countdownTime <= 10) {
+                    statusEl.style.color = "#ef4444";
+                }
+            }
+        }
+
+        function updateCurrentMatchFrame() {
+            const currentMatch = getCurrentMatch();
+
+            const score1El = document.getElementById("team1Score");
+            const score2El = document.getElementById("team2Score");
+            if (score1El) score1El.textContent = currentMatch.team1Score;
+            if (score2El) score2El.textContent = currentMatch.team2Score;
+
+            const matchIdEl = document.getElementById("matchIdDisplay");
+            if (matchIdEl) {
+                matchIdEl.textContent = `#${currentMatch.id}`;
+            }
+        }
+
+        function prepareNextMatchFrame(nextMatchId) {
+            if (!teamsForNextMatch) {
+                teamsForNextMatch = getRandomTeams();
+            }
+            
+            if (!oddsForNextMatch) {
+                oddsForNextMatch = generateRandomOdds();
+            }
+            
+            currentTeams = teamsForNextMatch;
+            odds = oddsForNextMatch;
+            
+            updateTeamsDisplay();
+            updateOddsDisplay();
+
+            if (!matches[nextMatchId]) {
+                matches[nextMatchId] = {
+                    id: nextMatchId,
+                    team1Score: 0,
+                    team2Score: 0,
+                    team1Name: currentTeams.team1,
+                    team2Name: currentTeams.team2,
+                    events: [],
+                    status: "pending",
+                    startTime: null,
+                    endTime: null,
+                    result: null
+                };
+                saveLocalStorage();
+            }
+
+            const nextMatch = matches[nextMatchId];
+
+            const score1El = document.getElementById("team1Score");
+            const score2El = document.getElementById("team2Score");
+            if (score1El) score1El.textContent = "0";
+            if (score2El) score2El.textContent = "0";
+
+            const matchIdEl = document.getElementById("matchIdDisplay");
+            if (matchIdEl) {
+                matchIdEl.textContent = `#${nextMatchId}`;
+            }
+
+            if (!countdownRunning) {
+                document.querySelectorAll('.odd-button-team, .odd-button-draw').forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.opacity = "0.5";
+                });
+            }
+        }
+
+        function updateOddsDisplay() {
+            document.querySelectorAll('.odd-button-team[data-type="W1"] .odd-value-team').forEach(el => {
+                el.textContent = odds.W1;
+            });
+            document.querySelectorAll('.odd-button-team[data-type="W2"] .odd-value-team').forEach(el => {
+                el.textContent = odds.W2;
+            });
+            document.querySelectorAll('.odd-button-draw[data-type="X"] .odd-value-draw').forEach(el => {
+                el.textContent = odds.X;
+            });
+
+            document.querySelectorAll('.odd-button-team[data-type="W1"]').forEach(btn => {
+                btn.setAttribute('data-odd', odds.W1);
+            });
+            document.querySelectorAll('.odd-button-team[data-type="W2"]').forEach(btn => {
+                btn.setAttribute('data-odd', odds.W2);
+            });
+            document.querySelectorAll('.odd-button-draw[data-type="X"]').forEach(btn => {
+                btn.setAttribute('data-odd', odds.X);
+            });
+        }
+
+        function endMatch() {
+            clearInterval(matchInterval);
+            matchRunning = false;
+
+            document.querySelectorAll('.odd-button-team, .odd-button-draw').forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = "0.5";
+            });
+
+            const currentMatch = getCurrentMatch();
+            currentMatch.status = "finished";
+            currentMatch.endTime = now();
+
+            if (currentMatch.team1Score > currentMatch.team2Score) {
+                currentMatch.result = "W1";
+            } else if (currentMatch.team2Score > currentMatch.team1Score) {
+                currentMatch.result = "W2";
+            } else {
+                currentMatch.result = "X";
+            }
+
+            saveLocalStorage();
+            processPendingBets(currentMatch.id, currentMatch.result);
+
+            showNotification(`🏁 Match #${currentMatchId} terminé !`, 
+                `${currentTeams.team1} ${currentMatch.team1Score}-${currentMatch.team2Score} ${currentTeams.team2}\nRésultat: ${currentMatch.result}`);
+
+            const statusEl = document.getElementById("matchStatus");
+            if (statusEl) {
+                let resultText = "";
+                if (currentMatch.result === "W1") {
+                    resultText = `${currentTeams.team1} gagne`;
+                } else if (currentMatch.result === "W2") {
+                    resultText = `${currentTeams.team2} gagne`;
+                } else {
+                    resultText = "Match Nul";
+                }
+                statusEl.textContent = `${resultText} ${currentMatch.team1Score}-${currentMatch.team2Score}`;
+                statusEl.style.color = "#ef4444";
+            }
+
+            const matchFrame = document.getElementById("matchFrame");
+            if (matchFrame) {
+                matchFrame.style.transition = "all 0.5s";
+                matchFrame.style.opacity = "0.5";
+                setTimeout(() => {
+                    matchFrame.style.opacity = "1";
+                }, 500);
+            }
+            
+            teamsForNextMatch = null;
+            oddsForNextMatch = null;
+        }
+
+        function flashTeamScore(team) {
+            const scoreEl = document.getElementById(`team${team}Score`);
+            if (scoreEl) {
+                scoreEl.style.transform = "scale(1.5)";
+                scoreEl.style.color = "#10b981";
+                scoreEl.style.transition = "all 0.3s";
+
+                setTimeout(() => {
+                    scoreEl.style.transform = "scale(1)";
+                    scoreEl.style.color = "#f59e0b";
+                }, 500);
+            }
+        }
+
+        function showGoalNotification(team) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 8px 15px;
+                border-radius: 15px;
+                z-index: 1000;
+                font-weight: bold;
+                box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+                animation: slideInUp 0.5s ease-out;
+            `;
+
+            notification.textContent = `⚽ BUT ! ${team} marque !`;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        function processPendingBets(matchId, result) {
+            const currentMatch = matches[matchId];
+            if (!currentMatch) return;
+
+            let winningType;
+            if (result === "W1") {
+                winningType = `${currentMatch.team1Name} gagne`;
+            } else if (result === "W2") {
+                winningType = `${currentMatch.team2Name} gagne`;
+            } else {
+                winningType = "Match Nul";
+            }
+
+            bets.forEach((bet, index) => {
+                if (bet.status === "pending" && bet.matchId === matchId) {
+                    if (bet.type === winningType) {
+                        bets[index].status = "won";
+                        balance += bet.gain;
+                        showNotification("🎉 Pari gagné !", `Vous avez gagné ${bet.gain} FCFA`);
+                    } else {
+                        bets[index].status = "loss";
+                        showNotification("❌ Pari perdu", `Vous avez perdu ${bet.montant} FCFA`);
+                    }
+                }
+            });
+
+            saveLocalStorage();
+            updateBalanceDisplay();
+            updateBetHistory();
+        }
+
+        // ===================== GESTION DES PARIS =====================
+        function initBetButtons() {
+            document.querySelectorAll('.odd-button-team, .odd-button-draw').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!connected) {
+                        alert("Vous devez être connecté pour placer un pari");
+                        return;
+                    }
+
+                    if (!countdownRunning) {
+                        alert("Les paris ne sont pas ouverts actuellement !\nLes paris sont ouverts pendant la minute de pause entre les matchs.");
+                        return;
+                    }
+
+                    const betType = this.getAttribute('data-type');
+                    const odd = parseFloat(this.getAttribute('data-odd'));
+                    showBetModal(betType, odd);
+                });
+            });
+        }
+
+        function getBetTypeName(betType) {
+            switch(betType) {
+                case 'W1': return `${currentTeams.team1} gagne`;
+                case 'X': return 'Match Nul';
+                case 'W2': return `${currentTeams.team2} gagne`;
+                default: return betType;
+            }
+        }
+
+        function showBetModal(betType, odd) {
+            const matchInfo = calculateCurrentMatch();
+            const targetMatchId = matchInfo.nextMatchId;
+
+            const modal = document.createElement('div');
+            modal.className = 'bet-modal';
+            modal.innerHTML = `
+                <div class="bet-modal-content">
+                    <h3>PLACER UN PARI</h3>
+                    <div class="bet-details">
+                        <div class="bet-detail-row">
+                            <span>Match:</span>
+                            <span><b>#${targetMatchId}</b></span>
+                        </div>
+                        <div class="bet-detail-row">
+                            <span>Rencontre:</span>
+                            <span><b>${currentTeams.team1} vs ${currentTeams.team2}</b></span>
+                        </div>
+                        <div class="bet-detail-row">
+                            <span>Paris:</span>
+                            <span><b>${getBetTypeName(betType)}</b></span>
+                        </div>
+                        <div class="bet-detail-row">
+                            <span>Cote:</span>
+                            <span style="color: #f59e0b;"><b>${odd}</b></span>
+                        </div>
+                        <div class="bet-detail-row">
+                            <span>Votre solde:</span>
+                            <span style="color: #10b981;"><b>${balance} FCFA</b></span>
+                        </div>
+                        <div class="bet-detail-row">
+                            <span>Temps pour parier:</span>
+                            <span style="color: #f59e0b;"><b>${countdownTime}s</b></span>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin: 12px 0;">
+                        <label for="betAmount" style="display: block; margin-bottom: 4px; color: #94a3b8; font-size: 11px;">
+                            Montant du pari (min: 100 FCFA)
+                        </label>
+                        <input type="number" id="betAmount" class="bet-amount-input"
+                               placeholder="Entrez le montant" min="100" max="${balance}"
+                               value="100" step="100">
+                    </div>
+                    <div id="potentialGain" style="text-align: center; margin: 8px 0; font-size: 13px;">
+                        Gain potentiel: <span style="color: #10b981; font-weight: bold;">${Math.floor(100 * odd)} FCFA</span>
+                    </div>
+                    <div class="bet-modal-buttons">
+                        <button id="cancelBet" class="vb-button vb-button-secondary">Annuler</button>
+                        <button id="confirmBet" class="vb-button" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">Confirmer</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            const amountInput = modal.querySelector('#betAmount');
+            const potentialGainEl = modal.querySelector('#potentialGain span');
+
+            amountInput.addEventListener('input', function() {
+                const amount = parseInt(this.value) || 0;
+                if (amount < 100) {
+                    this.value = 100;
+                }
+                if (amount > balance) {
+                    this.value = balance;
+                }
+                const gain = Math.floor(amount * odd);
+                potentialGainEl.textContent = `${gain} FCFA`;
+            });
+
+            modal.querySelector('#cancelBet').addEventListener('click', function() {
+                modal.remove();
+            });
+
+            modal.querySelector('#confirmBet').addEventListener('click', function() {
+                const amount = parseInt(amountInput.value);
+                confirmBet(betType, odd, amount, modal, targetMatchId);
+            });
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        function confirmBet(betType, odd, amount, modal, targetMatchId) {
+            if (isNaN(amount) || amount < 100) {
+                alert("Montant invalide. Minimum: 100 FCFA");
+                return;
+            }
+
+            if (amount > balance) {
+                alert(`Solde insuffisant. Votre solde: ${balance} FCFA`);
+                return;
+            }
+
+            const potentialGain = Math.floor(amount * odd);
+            const confirmMsg = `Confirmer le pari:\n\nMatch: #${targetMatchId}\nRencontre: ${currentTeams.team1} vs ${currentTeams.team2}\nType: ${getBetTypeName(betType)}\nMontant: ${amount} FCFA\nCote: ${odd}\nGain potentiel: ${potentialGain} FCFA\n\nConfirmer ?`;
+
+            if (confirm(confirmMsg)) {
+                balance -= amount;
+                saveLocalStorage();
+
+                const newBet = {
+                    id: `BET-${Date.now()}`,
+                    matchId: targetMatchId,
+                    match: `${currentTeams.team1} vs ${currentTeams.team2}`,
+                    type: getBetTypeName(betType),
+                    montant: amount,
+                    gain: potentialGain,
+                    time: now(),
+                    status: "pending",
+                    odd: odd
+                };
+
+                bets.push(newBet);
+                saveLocalStorage();
+
+                updateBalanceDisplay();
+                updateBetHistory();
+
+                showNotification("Pari placé!", `${amount} FCFA sur ${getBetTypeName(betType)}\nMatch #${targetMatchId}`);
+                modal.remove();
+
+                alert(`✅ Pari placé avec succès!\n\nMatch: #${targetMatchId}\nRencontre: ${currentTeams.team1} vs ${currentTeams.team2}\nMontant: ${amount} FCFA\nGain potentiel: ${potentialGain} FCFA\n\nLe résultat sera disponible après le match.`);
+            }
+        }
+
+        // ===================== NOTIFICATIONS =====================
+        function showNotification(title, text) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification(title, { body: text });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification(title, { body: text });
+                    }
+                });
+            }
+        }
+
+        // ===================== DASHBOARD INITIALISATION =====================
+        function initDashboard() {
+            const userId = checkSession();
+            if (!userId) return;
+
+            updateUserInfoButtons(userId);
+            updateSessionTimer();
+            initTabs();
+            initRecharge();
+            updateBetHistory();
+            initMatchControls();
+            updateBalanceDisplay();
+            
+            currentTeams = getRandomTeams();
+            updateTeamsDisplay();
+            
+            odds = generateRandomOdds();
+            updateOddsDisplay();
+        }
+
+        function updateUserInfoButtons(userId) {
+            const idDisplay = document.getElementById("userIDDisplay");
+            const balanceDisplay = document.getElementById("userBalanceDisplay");
+
+            if (idDisplay) {
+                idDisplay.textContent = `ID: ${userId}`;
+            }
+
+            if (balanceDisplay) {
+                balanceDisplay.textContent = `${balance} FCFA`;
+            }
+        }
+
+        function updateBalanceDisplay() {
+            const balanceDisplay = document.getElementById("userBalanceDisplay");
+            if (balanceDisplay) {
+                balanceDisplay.textContent = `${balance} FCFA`;
+            }
+        }
+
+        function updateSessionTimer() {
+            const timerEl = document.getElementById("sessionTimer");
+            const expirationDate = new Date(certExpiration);
+            document.getElementById("expirationDate").textContent =
+                `${expirationDate.toLocaleDateString()} ${expirationDate.toLocaleTimeString()}`;
+
+            function update() {
+                const now = Date.now();
+                const remaining = certExpiration - now;
+
+                if (remaining <= 0) {
+                    timerEl.textContent = "Session expirée";
+                    connected = false;
+                    localStorage.removeItem('VB_SESSION_CERT');
+                    setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 2000);
+                    return;
+                }
+
+                const hours = Math.floor(remaining / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+                timerEl.textContent = `Session: ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+                requestAnimationFrame(update);
+            }
+            update();
+        }
+
+        // ===================== TABS =====================
+        function initTabs() {
+            const tabs = ['tabDash', 'tabRecharge', 'tabHistory'];
+            const contents = ['contentDash', 'contentRecharge', 'contentHistory'];
+
+            tabs.forEach((tabId, index) => {
+                document.getElementById(tabId).onclick = () => {
+                    tabs.forEach(t => document.getElementById(t).classList.remove('active'));
+                    contents.forEach(c => document.getElementById(c).classList.add('vb-hidden'));
+
+                    document.getElementById(tabId).classList.add('active');
+                    document.getElementById(contents[index]).classList.remove('vb-hidden');
+
+                    if (tabId === 'tabRecharge') initRecharge();
+                    if (tabId === 'tabHistory') updateBetHistory();
+                };
+            });
+        }
+
+        // ===================== HISTORIQUE =====================
+        function updateBetHistory() {
+            const container = document.getElementById("betHistoryList");
+            if (bets.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 15px;">Aucun pari enregistré</div>';
+                return;
+            }
+
+            container.innerHTML = bets.slice().reverse().map(bet => {
+                const statusClass = bet.status === 'won' ? 'won' : bet.status === 'loss' ? 'loss' : '';
+                return `
+                    <div class="history-item ${statusClass}">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-weight: bold;">${bet.type} (Match #${bet.matchId || 'N/A'})</span>
+                            <span class="vb-badge ${
+                                bet.status === 'won' ? 'vb-badge-success' :
+                                bet.status === 'loss' ? 'vb-badge-danger' : 'vb-badge-warning'
+                            }">${bet.status.toUpperCase()}</span>
+                        </div>
+                        <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">${bet.time}</div>
+                        <div style="margin-top: 6px;">
+                            Match: <b>${bet.match || 'N/A'}</b><br>
+                            Montant: <b>${bet.montant} FCFA</b> |
+                            Gain: <b>${bet.gain} FCFA</b>
+                        </div>
+                        ${bet.status === 'won' ? '<div style="color: #10b981; font-size: 11px; margin-top: 4px;">✓ Gain ajouté au solde</div>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        document.getElementById("clearHistory").onclick = () => {
+            if (confirm("Voulez-vous vraiment effacer tout l'historique ?")) {
+                bets = [];
+                saveLocalStorage();
+                updateBetHistory();
+            }
+        };
+
+        // ===================== RECHARGE =====================
+        function initRecharge() {
+            const currentUser = sessionCert.split("|")[1] || "N/A";
+            document.getElementById("depID").value = currentUser;
+
+            document.getElementById("depValidate").onclick = async () => {
+                const id = val("depID");
+                const amount = parseInt(val("depAmount"));
+                const type = val("depType");
+
+                if (!amount || amount < CONFIG.MIN_DEPOSIT) {
+                    alert(`Montant invalide. Minimum: ${CONFIG.MIN_DEPOSIT} FCFA`);
+                    return;
+                }
+
+                const activeReq = pendingDeposits.find(dep =>
+                    dep.status === "awaiting" && Date.now() - dep.createdAt < 600000
+                );
+
+                if (activeReq) {
+                    alert(`Vous avez déjà une requête en attente:\n${activeReq.reqID}\nExpire dans ${Math.ceil((600000 - (Date.now() - activeReq.createdAt))/60000)} minutes`);
+                    return;
+                }
+
+                const reqID = `REQ-${requestCounter.toString().padStart(4, '0')}`;
+                const time = now();
+                const requestCode = btoa(`REQ=${reqID}|ID=${id}|AMOUNT=${amount}|TYPE=${type}|TIME=${time}|CERT=${sessionCert.substring(0, 50)}`);
+
+                pendingDeposits.push({
+                    reqID,
+                    id,
+                    amount,
+                    type,
+                    time,
+                    status: "awaiting",
+                    createdAt: Date.now(),
+                    requestCode,
+                    attempts: 0,
+                    confirmedAt: null,
+                    confirmationCode: null
+                });
+
+                requestCounter++;
+                saveLocalStorage();
+
+                renderDepositLists();
+                alert(`✅ Demande créée!\n\nID Requête: ${reqID}\n\nCode de requête généré. Présentez-le au caissier.`);
+            };
+
+            // Gestion des tabs de recharge
+            const depTabs = {
+                'depTabPending': 'depPendingContent',
+                'depTabSuccess': 'depSuccessContent',
+                'depTabExpired': 'depExpiredContent'
+            };
+
+            Object.keys(depTabs).forEach(tabId => {
+                document.getElementById(tabId).onclick = () => {
+                    Object.keys(depTabs).forEach(t => {
+                        document.getElementById(t).classList.remove('active');
+                        document.getElementById(depTabs[t]).classList.add('vb-hidden');
+                    });
+                    document.getElementById(tabId).classList.add('active');
+                    document.getElementById(depTabs[tabId]).classList.remove('vb-hidden');
+                    renderDepositLists();
+                };
+            });
+
+            renderDepositLists();
+        }
+
+        function renderDepositLists() {
+            const nowTime = Date.now();
+
+            // En attente
+            const pendingContainer = document.getElementById("depPendingContent");
+            const pending = pendingDeposits.filter(dep => dep.status === "awaiting" && nowTime - dep.createdAt < 600000);
+
+            if (pending.length === 0) {
+                pendingContainer.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 15px;">Aucune demande en attente</div>';
+            } else {
+                pendingContainer.innerHTML = pending.map(dep => {
+                    const remaining = 600000 - (nowTime - dep.createdAt);
+                    const min = Math.floor(remaining / 60000);
+                    const sec = Math.floor((remaining % 60000) / 1000);
+
+                    return `
+                    <div class="recharge-request">
+                        <div class="vb-frame" id="frame-${dep.reqID}">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <b>${dep.reqID}</b>
+                                <span class="vb-badge vb-badge-warning">⏳ ${pad(min)}:${pad(sec)}</span>
+                            </div>
+                            <div style="font-size: 12px; margin-top: 6px;">
+                                💵 <b>${dep.amount} FCFA</b> via ${dep.type}<br>
+                                🕒 ${dep.time}<br>
+                                <div style="margin-top: 8px; background: #020617; padding: 8px; border-radius: 6px; font-family: monospace; font-size: 9px; word-break: break-all;">
+                                    ${dep.requestCode}
+                                </div>
+                                <button onclick="navigator.clipboard.writeText('${dep.requestCode}').then(() => alert('Code copié!'))"
+                                        class="vb-button" style="margin-top: 6px; padding: 5px 8px; font-size: 10px;">
+                                    📋 Copier le code
+                                </button>
+                                <div class="confirm-section">
+                                    <b style="font-size: 11px; display: block; margin-bottom: 6px;">🔐 CONFIRMER CETTE RECHARGE</b>
+                                    <input class="confirm-code-input vb-input"
+                                           placeholder="Code de confirmation (16 caractères)"
+                                           data-reqid="${dep.reqID}"
+                                           style="font-size: 10px; margin-bottom: 6px;">
+                                    <button class="confirm-recharge-btn vb-button"
+                                            data-reqid="${dep.reqID}"
+                                            data-amount="${dep.amount}"
+                                            style="font-size: 10px;">
+                                        CONFIRMER LA RECHARGE
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+
+                // Gestion de la confirmation des recharges
+                document.querySelectorAll('.confirm-recharge-btn').forEach(btn => {
+                    btn.onclick = async () => {
+                        const reqID = btn.getAttribute('data-reqid');
+                        const amount = btn.getAttribute('data-amount');
+                        const input = document.querySelector(`.confirm-code-input[data-reqid="${reqID}"]`);
+                        const inputCode = input.value.trim();
+                        const frame = document.getElementById(`frame-${reqID}`);
+
+                        if (!inputCode || inputCode.length < 16) {
+                            alert("Code de confirmation invalide");
+                            return;
+                        }
+
+                        btn.disabled = true;
+                        btn.innerHTML = "⏳ Vérification...";
+
+                        let found = false;
+                        for (const dep of pendingDeposits) {
+                            if (dep.reqID === reqID && dep.status === "awaiting") {
+                                const confirmCode = await sha256(dep.requestCode + CONFIG.ADMIN_SECRET);
+                                if (inputCode === confirmCode) {
+                                    showSuccessToast(amount);
+                                    animateSuccessFrame(frame, amount);
+
+                                    setTimeout(() => {
+                                        dep.status = "confirmed";
+                                        dep.confirmedAt = Date.now();
+                                        dep.confirmationCode = inputCode;
+                                        balance += parseInt(amount);
+
+                                        saveLocalStorage();
+                                        updateBalanceDisplay();
+
+                                        showNotification("Recharge confirmée!", `+${amount} FCFA ajoutés à votre compte`);
+                                        renderDepositLists();
+                                    }, 5500);
+
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!found) {
+                            btn.disabled = false;
+                            btn.innerHTML = "CONFIRMER LA RECHARGE";
+                            alert("❌ Code de confirmation invalide ou expiré");
+                        }
+                    };
+                });
+            }
+
+            // Confirmées
+            const successContainer = document.getElementById("depSuccessContent");
+            const success = pendingDeposits.filter(dep => dep.status === "confirmed");
+
+            if (success.length === 0) {
+                successContainer.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 15px;">Aucune recharge confirmée</div>';
+            } else {
+                successContainer.innerHTML = success.map(dep => `
+                    <div class="recharge-request">
+                        <div class="vb-frame" style="border-color: #10b981;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <b>${dep.reqID}</b>
+                                <span class="vb-badge vb-badge-success">✅ Confirmé</span>
+                            </div>
+                            <div style="font-size: 12px; margin-top: 6px;">
+                                💵 <b>${dep.amount} FCFA</b> via ${dep.type}<br>
+                                🕒 ${dep.time}<br>
+                                <div style="margin-top: 6px;">
+                                    🔐 <b>ID Transaction:</b><br>
+                                    <div style="background: #020617; padding: 6px; border-radius: 6px; font-family: monospace; font-size: 9px; word-break: break-all; margin-top: 4px; color: #60a5fa;">
+                                        ${dep.confirmationCode || 'N/A'}
+                                    </div>
+                                    <button onclick="navigator.clipboard.writeText('${dep.confirmationCode || ''}').then(() => alert('ID Transaction copié!'))"
+                                            class="vb-button" style="margin-top: 6px; padding: 4px 6px; font-size: 9px;">
+                                        📋 Copier ID
+                                    </button>
+                                </div>
+                                <div style="color: #10b981; font-size: 10px; margin-top: 6px;">
+                                    ✓ Ajouté au solde
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Expirées
+            const expiredContainer = document.getElementById("depExpiredContent");
+            const expired = pendingDeposits.filter(dep =>
+                (dep.status === "awaiting" && nowTime - dep.createdAt >= 600000) ||
+                dep.status === "expired"
+            );
+
+            if (expired.length === 0) {
+                expiredContainer.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 15px;">Aucune demande expirée</div>';
+            } else {
+                expiredContainer.innerHTML = expired.map(dep => `
+                    <div class="recharge-request">
+                        <div class="vb-frame" style="opacity: 0.7;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <b>${dep.reqID}</b>
+                                <span class="vb-badge vb-badge-danger">❌ Expiré</span>
+                            </div>
+                            <div style="font-size: 12px; margin-top: 6px;">
+                                💵 <b>${dep.amount} FCFA</b> via ${dep.type}<br>
+                                🕒 ${dep.time}<br>
+                                <div style="color: #ef4444; font-size: 10px; margin-top: 4px;">
+                                    ✗ Non confirmée à temps
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showSuccessToast(amount) {
+            const toast = document.createElement('div');
+            toast.className = 'success-toast';
+
+            const message = document.createElement('div');
+            message.innerHTML = `<strong>+${amount} FCFA</strong> ajoutés à votre compte`;
+
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress-bar';
+
+            toast.appendChild(message);
+            toast.appendChild(progressBar);
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 5500);
+        }
+
+        function animateSuccessFrame(frame, amount) {
+            const formDiv = frame.querySelector('.confirm-section');
+            formDiv.innerHTML = '';
+
+            const successContainer = document.createElement('div');
+            successContainer.style.cssText = `
+                text-align: center;
+                padding: 12px;
+            `;
+
+            const successIcon = document.createElement('div');
+            successIcon.style.cssText = `
+                font-size: 28px;
+                color: #10b981;
+                margin-bottom: 8px;
+            `;
+            successIcon.textContent = '✓';
+
+            const successMsg = document.createElement('div');
+            successMsg.style.cssText = `
+                color: #10b981;
+                font-weight: bold;
+                font-size: 13px;
+            `;
+            successMsg.innerHTML = `Recharge confirmée<br><span style="font-size: 18px;">+${amount} FCFA</span>`;
+
+            successContainer.appendChild(successIcon);
+            successContainer.appendChild(successMsg);
+            formDiv.appendChild(successContainer);
+
+            const badge = frame.querySelector('.vb-badge');
+            if (badge) {
+                badge.className = 'vb-badge vb-badge-success';
+                badge.textContent = '✅ Confirmé';
+            }
+
+            frame.style.borderColor = '#10b981';
+            frame.style.boxShadow = '0 0 15px rgba(16, 185, 129, 0.4)';
+            frame.style.transition = 'all 0.5s';
+
+            setTimeout(() => {
+                frame.style.boxShadow = 'none';
+            }, 2000);
+        }
+
+        // ===================== DÉCONNEXION =====================
+        document.getElementById("dashLogout").onclick = () => {
+            if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+                connected = false;
+                sessionCert = "";
+                localStorage.removeItem('VB_SESSION_CERT');
+
+                stopAllTimers();
+                window.location.href = "login.html";
+            }
+        };
+
+        // ===================== INITIALISATION DU MATCH =====================
+        function initMatchControls() {
+            const matchInfo = calculateCurrentMatch();
+            currentMatchId = matchInfo.matchId;
+            getCurrentMatch();
+
+            updateMatchSchedule();
+            matchScheduleInterval = setInterval(updateMatchSchedule, 1000);
+            updateMatchDisplay();
+            initBetButtons();
+        }
+
+        // ===================== CHARGEMENT INITIAL =====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLocalStorage();
+            initDashboard();
+            
+            if ("Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission();
+            }
+            
+            initBetButtons();
+        });
+
+        // ===================== SAUVEGARDE AVANT FERMETURE =====================
+        window.addEventListener('beforeunload', () => {
+            saveLocalStorage();
+        });
+    </script>
+</body>
+</html>

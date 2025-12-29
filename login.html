@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtualBet Nano Client - Login</title>
+    <style>
+        /* ===================== STYLES GÉNÉRAUX ===================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            color: #e5e7eb;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ===================== CONTAINER PRINCIPAL ===================== */
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        .vb-box {
+            background: #0f172a;
+            color: #e5e7eb;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid #334155;
+        }
+
+        /* ===================== HEADERS ===================== */
+        h2 {
+            color: #60a5fa;
+            text-align: center;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        .version {
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* ===================== FORMULAIRES ===================== */
+        .vb-input, .vb-button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .vb-input {
+            background: #020617;
+            color: #e5e7eb;
+        }
+
+        .vb-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .vb-button {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+
+        .vb-button:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+        }
+
+        .vb-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===================== FRAMES ===================== */
+        .vb-frame {
+            border: 2px dashed #2563eb;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            background: #020617;
+            text-align: center;
+        }
+
+        .vb-nano-point {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            border-radius: 50%;
+            margin: 15px auto;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s;
+        }
+
+        .vb-nano-point:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        .vb-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* ===================== UTILITAIRES ===================== */
+        #loginStatus {
+            text-align: center;
+            margin-top: 15px;
+            min-height: 20px;
+            font-size: 13px;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 12px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        /* ===================== RESPONSIVE ===================== */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 10px;
+            }
+            
+            .vb-box {
+                padding: 15px;
+            }
+            
+            h2 {
+                font-size: 18px;
+            }
+            
+            .vb-input, .vb-button {
+                padding: 10px;
+                font-size: 13px;
+            }
+            
+            .vb-nano-point {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .vb-box {
+                padding: 12px;
+            }
+            
+            .vb-frame {
+                padding: 12px;
+            }
+            
+            h2 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="vb-box">
+            <h2>VIRTUALBET NANO CLIENT</h2>
+            <div class="version">Version 40.7 - Interface Ultra Compacte</div>
+
+            <!-- Message d'avertissement pour HTTP -->
+            <div id="httpsWarning" class="warning-box" style="display: none;">
+                ⚠️ <b>Attention :</b> Certaines fonctionnalités nécessitent HTTPS.<br>
+                Pour une sécurité optimale, utilisez https:// ou localhost.
+            </div>
+
+            <div class="vb-frame">
+                <b>🔑 AUTHENTIFICATION</b>
+                <input id="phone" class="vb-input" placeholder="ID (8 chiffres)" maxlength="8" type="tel">
+                <input id="hashClient" class="vb-input" placeholder="HASH" readonly>
+                <button id="genHash" class="vb-button">GÉNÉRER HASH</button>
+            </div>
+
+            <div class="vb-frame">
+                <b>📄 CERTIFICAT NUMÉRIQUE</b>
+                <div style="text-align: center;">
+                    <div id="nanoCert" class="vb-nano-point" title="Cliquer pour uploader un certificat">
+                        📄
+                    </div>
+                    <div style="font-size: 12px; color: #94a3b8; margin-top: 8px;">
+                        Cliquez sur l'icône pour uploader un certificat
+                    </div>
+                    <input type="file" id="nanoFile" style="display: none;" accept=".txt,.cert">
+                </div>
+            </div>
+
+            <div id="loginStatus"></div>
+        </div>
+    </div>
+
+    <script>
+        // ===================== CONFIGURATION =====================
+        const CONFIG = {
+            SESSION_VALID_MS: 48 * 60 * 60 * 1000, // 48h
+            ADMIN_SECRET: "ADMIN_PRIVATE_SECRET_2025"
+        };
+
+        // ===================== VÉRIFICATION HTTPS =====================
+        function checkHTTPS() {
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1';
+            const isHTTPS = window.location.protocol === 'https:';
+            
+            if (!isHTTPS && !isLocalhost) {
+                document.getElementById('httpsWarning').style.display = 'block';
+                return false;
+            }
+            return true;
+        }
+
+        // ===================== VÉRIFICATION CRYPTO =====================
+        function checkCryptoSupport() {
+            if (!window.crypto || !window.crypto.subtle) {
+                alert("❌ Votre navigateur ne supporte pas les fonctionnalités de cryptographie nécessaires.\n\n" +
+                      "Veuillez :\n" +
+                      "1. Utiliser un navigateur récent (Chrome, Firefox, Edge)\n" +
+                      "2. Accéder au site via HTTPS\n" +
+                      "3. Vérifier que JavaScript est activé");
+                document.getElementById('genHash').disabled = true;
+                return false;
+            }
+            return true;
+        }
+
+        // ===================== FONCTIONS UTILITAIRES =====================
+        function val(id) { 
+            return document.getElementById(id)?.value.trim() || ""; 
+        }
+
+        // Fonction SHA256 pour les certificats (simplifiée pour HTTP)
+        async function sha256(data) {
+            try {
+                if (window.crypto && window.crypto.subtle) {
+                    const encoder = new TextEncoder();
+                    const buf = await crypto.subtle.digest("SHA-256", encoder.encode(data));
+                    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+                } else {
+                    // Fallback simple pour HTTP (moins sécurisé)
+                    let hash = 0;
+                    for (let i = 0; i < data.length; i++) {
+                        hash = ((hash << 5) - hash) + data.charCodeAt(i);
+                        hash = hash & hash;
+                    }
+                    return Math.abs(hash).toString(16).padStart(64, '0');
+                }
+            } catch (error) {
+                console.error("Erreur SHA256:", error);
+                // Fallback ultra simple
+                return Array.from(data).reduce((hash, char) => 
+                    (hash * 31 + char.charCodeAt(0)) >>> 0, 5381
+                ).toString(16).padStart(64, '0');
+            }
+        }
+
+        // ===================== FONCTION POUR GÉNÉRER HASH SIMPLIFIÉE =====================
+        async function generateSimpleHash(id, data) {
+            'use strict';
+            
+            // 1. Vérification ID (8 chiffres)
+            if (!/^[0-9]{8}$/.test(id)) {
+                throw new Error("ID invalide (8 chiffres requis)");
+            }
+            
+            // 2. Création du texte clair
+            const timestamp = Date.now();
+            const plaintext = `${id}|${timestamp}|${data}`;
+            
+            // 3. Vérifier si crypto.subtle est disponible
+            if (!window.crypto || !window.crypto.subtle) {
+                // Mode dégradé pour HTTP
+                const encoder = new TextEncoder();
+                const encoded = encoder.encode(plaintext);
+                let hash = '';
+                
+                // Hash maison simple
+                for (let i = 0; i < encoded.length; i++) {
+                    hash += String.fromCharCode(encoded[i] ^ 0xAA);
+                }
+                
+                // Encodage Base64
+                const base64Hash = btoa(hash);
+                
+                return {
+                    hash: base64Hash,
+                    details: {
+                        id: id,
+                        timestamp: timestamp,
+                        data: data,
+                        plaintext: plaintext,
+                        mode: "http-fallback"
+                    }
+                };
+            }
+            
+            // 4. Mode normal (HTTPS) - AES-GCM
+            const enc = new TextEncoder();
+            
+            // Génération aléatoire
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            
+            // Dérivation de clé PBKDF2
+            const baseKey = await crypto.subtle.importKey(
+                "raw",
+                enc.encode(id),
+                "PBKDF2",
+                false,
+                ["deriveKey"]
+            );
+            
+            const key = await crypto.subtle.deriveKey(
+                {
+                    name: "PBKDF2",
+                    salt: salt,
+                    iterations: 120000,
+                    hash: "SHA-256"
+                },
+                baseKey,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["encrypt"]
+            );
+            
+            // Chiffrement AES-GCM
+            const encrypted = await crypto.subtle.encrypt(
+                {
+                    name: "AES-GCM",
+                    iv: iv
+                },
+                key,
+                enc.encode(plaintext)
+            );
+            
+            // Assemblage final
+            const result = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+            result.set(salt, 0);
+            result.set(iv, salt.length);
+            result.set(new Uint8Array(encrypted), salt.length + iv.length);
+            
+            // Conversion en Base64
+            const hash = btoa(String.fromCharCode(...result));
+            
+            return {
+                hash: hash,
+                details: {
+                    id: id,
+                    timestamp: timestamp,
+                    data: data,
+                    saltHex: Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join(''),
+                    ivHex: Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join(''),
+                    plaintext: plaintext,
+                    mode: "aes-gcm"
+                }
+            };
+        }
+
+        // ===================== GESTION DU STOCKAGE LOCAL =====================
+        function saveSession(sessionCert) {
+            localStorage.setItem('VB_SESSION_CERT', sessionCert);
+        }
+
+        // ===================== GÉNÉRATION DE HASH =====================
+        document.getElementById("genHash").onclick = async () => {
+            const phone = val("phone");
+            if (!/^\d{8}$/.test(phone)) {
+                alert("ID invalide (8 chiffres requis)");
+                return;
+            }
+            
+            const button = document.getElementById("genHash");
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = "⏳ Génération...";
+            
+            try {
+                // Utilise 1000 comme solde initial pour le hash
+                const result = await generateSimpleHash(phone, "1000");
+                
+                // Affiche le hash dans le champ
+                document.getElementById("hashClient").value = result.hash;
+                
+                // Copie automatique dans le presse-papier
+                try {
+                    await navigator.clipboard.writeText(result.hash);
+                    console.log("Hash copié dans le presse-papier");
+                    
+                    // Mode de génération utilisé
+                    const mode = result.details.mode === "aes-gcm" ? 
+                        "Mode sécurisé (AES-GCM)" : "Mode simplifié";
+                    
+                    alert(`✅ Hash généré avec succès!\n\n${mode}\nLe hash a été copié dans votre presse-papier.`);
+                } catch (clipboardError) {
+                    console.warn("Clipboard non disponible:", clipboardError);
+                    alert(`✅ Hash généré avec succès!\n\nCopiez manuellement le hash ci-dessus.`);
+                }
+                
+            } catch (error) {
+                console.error("Erreur génération hash:", error);
+                
+                // Message d'erreur adapté
+                if (error.message.includes("importKey") || error.message.includes("subtle")) {
+                    alert("❌ Fonction de cryptographie non disponible.\n\n" +
+                          "Solution :\n" +
+                          "1. Accédez au site via HTTPS (https://...)\n" +
+                          "2. Utilisez localhost\n" +
+                          "3. Utilisez un navigateur récent");
+                } else {
+                    alert("❌ Erreur lors de la génération du hash: " + error.message);
+                }
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        };
+
+        // ===================== UPLOAD CERTIFICAT =====================
+        document.getElementById("nanoCert").onclick = () => {
+            document.getElementById("nanoFile").click();
+        };
+
+        document.getElementById("nanoFile").onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const nanoPoint = document.getElementById("nanoCert");
+            const statusDiv = document.getElementById("loginStatus");
+
+            nanoPoint.classList.add("vb-spinner");
+            nanoPoint.textContent = "⏳";
+            statusDiv.innerHTML = '<span style="color:#f59e0b">Vérification du certificat en cours...</span>';
+
+            try {
+                const text = await file.text();
+                const [type, id, timestamp, signature] = text.trim().split("|");
+
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                const expectedSig = await sha256(id + timestamp + CONFIG.ADMIN_SECRET);
+                const timeDiff = Date.now() - parseInt(timestamp);
+
+                if (type === "CERT" && signature === expectedSig && timeDiff < CONFIG.SESSION_VALID_MS) {
+                    // Sauvegarde la session
+                    saveSession(text.trim());
+                    
+                    nanoPoint.classList.remove("vb-spinner");
+                    nanoPoint.textContent = "✅";
+                    nanoPoint.style.background = "linear-gradient(135deg, #10b981 0%, #059669 100%)";
+
+                    statusDiv.innerHTML = '<span style="color:#10b981">✓ Certificat validé ! Redirection vers le dashboard...</span>';
+
+                    // Redirection vers le dashboard
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 1000);
+
+                } else {
+                    throw new Error("Certificat invalide ou expiré");
+                }
+
+            } catch (error) {
+                nanoPoint.classList.remove("vb-spinner");
+                nanoPoint.textContent = "❌";
+                nanoPoint.style.background = "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)";
+                statusDiv.innerHTML = `<span style="color:#ef4444">✗ ${error.message}</span>`;
+
+                setTimeout(() => {
+                    nanoPoint.textContent = "📄";
+                    nanoPoint.style.background = "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)";
+                    statusDiv.innerHTML = "";
+                }, 3000);
+            }
+        };
+
+        // ===================== VÉRIFICATION DE SESSION EXISTANTE =====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier HTTPS
+            checkHTTPS();
+            
+            // Vérifier support crypto
+            checkCryptoSupport();
+            
+            const sessionCert = localStorage.getItem('VB_SESSION_CERT');
+            
+            if (sessionCert) {
+                const [type, id, timestamp] = sessionCert.split("|");
+                const timeDiff = Date.now() - parseInt(timestamp);
+                
+                if (type === "CERT" && timeDiff < CONFIG.SESSION_VALID_MS) {
+                    // Redirection automatique si session valide
+                    document.getElementById("loginStatus").innerHTML = 
+                        '<span style="color:#f59e0b">Session détectée, redirection...</span>';
+                    
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 1000);
+                } else {
+                    // Supprime la session expirée
+                    localStorage.removeItem('VB_SESSION_CERT');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
